@@ -12,7 +12,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 class App extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    final user = useProvider(authenticationStateNotifierProvider.state).user;
+    final state = useProvider(authenticationStateNotifierProvider.state).data;
+
+    final user = state?.data;
 
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,

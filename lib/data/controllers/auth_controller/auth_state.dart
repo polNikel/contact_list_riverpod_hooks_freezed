@@ -22,47 +22,71 @@ final authenticationStateNotifierProvider =
     StateNotifierProvider<AuthenticationStateNotifier>(
         (ref) => AuthenticationStateNotifier(ref.read));
 
-class AuthenticationStateNotifier extends StateNotifier<AuthState> {
+class AuthenticationStateNotifier extends StateNotifier<AsyncValue<User>> {
   final Reader read;
 
-  AuthenticationStateNotifier(this.read) : super(AuthState()) {
+  AuthenticationStateNotifier(this.read) : super(AsyncValue.data(null)) {
     getSignedInUser();
   }
 
-  Future<void> logOut() async {
-    final _authenticationUseCases = read(authRepositoryProvider);
-    state = state.copyWith(isLoading: true);
-    final result = await _authenticationUseCases.logOut();
-    result.fold(
-      (failure) => state = state.copyWith(
-          isLoading: false, errorMessage: mapFailureToMessage(failure)),
-      (_) => state = state.copyWith(isLoading: false),
-    );
-  }
+  // Future<void> logOut() async {
+  //   final _authenticationUseCases = read(authRepositoryProvider);
+  //   state = state.copyWith(isLoading: true);
+  //   final result = await _authenticationUseCases.logOut();
+  //   result.fold(
+  //     (failure) => state = state.copyWith(
+  //         isLoading: false, errorMessage: mapFailureToMessage(failure)),
+  //     (_) => state = state.copyWith(isLoading: false),
+  //   );
+  // }
+
+  // Future<void> logIn(
+  //     {@required String username, @required String password}) async {
+  //   final _authenticationUseCases = read(authRepositoryProvider);
+  //   state = state.copyWith(isLoading: true);
+  //   final result = await _authenticationUseCases.logIn(
+  //     username: username,
+  //     password: password,
+  //   );
+  //   result.fold(
+  //     (failure) => state = state.copyWith(
+  //         isLoading: false, errorMessage: mapFailureToMessage(failure)),
+  //     (user) => state = state.copyWith(user: user),
+  //   );
+  // }
+
+  // Future<void> getSignedInUser() async {
+  //   final _authenticationUseCases = read(authRepositoryProvider);
+  //   state = state.copyWith(isLoading: true);
+  //   final result = await _authenticationUseCases.getSignedInUser();
+  //   result.fold(
+  //     (failure) => state = state.copyWith(
+  //         isLoading: false, errorMessage: mapFailureToMessage(failure)),
+  //     (user) => state = state.copyWith(user: user),
+  //   );
+  // }
 
   Future<void> logIn(
       {@required String username, @required String password}) async {
     final _authenticationUseCases = read(authRepositoryProvider);
-    state = state.copyWith(isLoading: true);
+    state = AsyncValue.loading();
     final result = await _authenticationUseCases.logIn(
       username: username,
       password: password,
     );
     result.fold(
-      (failure) => state = state.copyWith(
-          isLoading: false, errorMessage: mapFailureToMessage(failure)),
-      (user) => state = state.copyWith(user: user),
+      (failure) => state = AsyncValue.error(mapFailureToMessage(failure)),
+      (user) => state = AsyncValue.data(user),
     );
   }
 
   Future<void> getSignedInUser() async {
     final _authenticationUseCases = read(authRepositoryProvider);
-    state = state.copyWith(isLoading: true);
+    state = AsyncValue.loading();
     final result = await _authenticationUseCases.getSignedInUser();
     result.fold(
-      (failure) => state = state.copyWith(
-          isLoading: false, errorMessage: mapFailureToMessage(failure)),
-      (user) => state = state.copyWith(user: user),
+      (failure) => state = AsyncValue.error(mapFailureToMessage(failure)),
+      (user) => state = AsyncValue.data(user),
     );
   }
 }

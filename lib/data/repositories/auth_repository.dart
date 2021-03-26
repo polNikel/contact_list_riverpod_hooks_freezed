@@ -8,7 +8,7 @@ import 'package:meta/meta.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final authRepositoryProvider =
-    Provider.autoDispose<AuthRepository>((ref) => AuthRepositoryImpl(ref.read));
+    Provider<AuthRepository>((ref) => AuthRepositoryImpl(ref.read));
 
 abstract class AuthRepository {
   Future<Either<Failure, User>> logIn(
